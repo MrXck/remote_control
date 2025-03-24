@@ -1,5 +1,7 @@
 package com.remote;
 
+import android.net.LocalSocket;
+import android.net.LocalSocketAddress;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -10,6 +12,8 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +24,7 @@ public class MyWebSocketListener extends WebSocketListener {
     public void onOpen(WebSocket webSocket, okhttp3.Response response) {
         Map<String, Object> map = new HashMap<>();
         map.put("type", "join");
-        map.put("roomId", "111");
+        map.put("roomId", 111);
         webSocket.send(JsonUtils.toJson(map));
         // 连接成功
         log("连接已打开");
@@ -53,6 +57,43 @@ public class MyWebSocketListener extends WebSocketListener {
             case "candidate":
                 webRTCManager.handlerCandidate(message.getCandidate(), webRTCManager.localPeerConnection);
                 break;
+            case "action":
+                Map data = message.getData();
+                log("收到操作: " + data);
+
+                if (data.get("type").equals("click")) {
+                    new Thread(() -> {
+                        try (LocalSocket socket = new LocalSocket();
+                             DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
+                            socket.connect(new LocalSocketAddress("my_click_socket"));
+                            output.writeInt(1);
+                            output.writeDouble((Double) data.get("x"));
+                            output.writeDouble((Double) data.get("y"));
+                            output.flush();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                } else if (data.get("type").equals("drag")) {
+                    new Thread(() -> {
+                        try (LocalSocket socket = new LocalSocket();
+                             DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
+                            socket.connect(new LocalSocketAddress("my_click_socket"));
+                            output.writeInt(2);
+                            output.writeDouble((Double) data.get("x"));
+                            output.writeDouble((Double) data.get("y"));
+                            output.writeDouble((Double) data.get("x1"));
+                            output.writeDouble((Double) data.get("y1"));
+                            output.flush();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
+
+
+
+
         }
 
         log("收到消息: " + string);

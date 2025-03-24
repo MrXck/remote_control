@@ -10,6 +10,16 @@ public class Message {
 
     private Map candidate;
 
+    private Map data;
+
+    public Map getData() {
+        return data;
+    }
+
+    public void setData(Map data) {
+        this.data = data;
+    }
+
     public Map getCandidate() {
         return candidate;
     }
@@ -33,5 +43,15 @@ public class Message {
 
     public void setSdp(Map sdp) {
         this.sdp = sdp;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "type='" + type + '\'' +
+                ", sdp=" + sdp +
+                ", candidate=" + candidate +
+                ", data=" + data +
+                '}';
     }
 }

@@ -1,11 +1,49 @@
 package com.remote;
 
 import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.GestureDescription;
+import android.content.Context;
+import android.graphics.Path;
+import android.net.LocalServerSocket;
+import android.net.LocalSocket;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+
 public class MyAccessibilityService extends AccessibilityService {
+
+    private LocalServerSocket serverSocket;
+    private volatile boolean isRunning = true;
+
+    private int width;
+    private int height;
+
+    // 获取屏幕分辨率（单位：像素）
+    public int[] getScreenResolution() {
+        // 通过系统服务获取 WindowManager
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+        // 创建 DisplayMetrics 对象
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+
+        // 获取默认显示器的指标
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+
+        // 提取宽高
+        int width = displayMetrics.widthPixels;
+        int height = displayMetrics.heightPixels;
+
+        this.width = width;
+        this.height = height;
+
+        return new int[]{width, height};
+    }
 
     /**
      * 无障碍服务的生命周期，表明服务已经连接成功
@@ -14,6 +52,69 @@ public class MyAccessibilityService extends AccessibilityService {
     public void onServiceConnected() {
         super.onServiceConnected();
         Log.e("zh", "onServiceConnected: 成功");
+        Log.e("display", Arrays.toString(getScreenResolution()));
+        new Thread(() -> {
+            try {
+                serverSocket = new LocalServerSocket("my_click_socket");
+                while (isRunning) {
+                    LocalSocket client = serverSocket.accept();
+                    handleClient(client);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void handleClient(LocalSocket client) {
+        try (DataInputStream input = new DataInputStream(client.getInputStream())) {
+            int type = input.readInt();
+            double x = input.readDouble();
+            double y = input.readDouble();
+            Log.e("ACTION", "x=" + (x * width) + ",y=" + (y * height));
+
+            if (type == 1) {
+                handleClick(x, y);
+            } else if (type == 2) {
+                double x1 = input.readDouble();
+                double y1 = input.readDouble();
+                handleDrag(x, y, x1, y1);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleClick(double x, double y) {
+        Path path = new Path();
+        path.moveTo((float) (x * width), (float) (y * height)); // 目标坐标
+
+        GestureDescription gesture = new GestureDescription.Builder()
+                .addStroke(new GestureDescription.StrokeDescription(
+                        path,
+                        0,     // 开始时间（ms）
+                        50     // 持续时间（ms，建议≥50ms）
+                ))
+                .build();
+
+        dispatchGesture(gesture, null, null); // 执行手势
+    }
+
+    // 拖动
+    private void handleDrag(double x, double y, double x1, double y1) {
+        Path path = new Path();
+        path.moveTo((float) (x * width), (float) (y * height)); // 目标坐标
+        path.lineTo((float) (x1 * width), (float) (y1 * height)); // 目标坐标
+        // ...
+        GestureDescription gesture = new GestureDescription.Builder()
+                .addStroke(new GestureDescription.StrokeDescription(
+                        path,
+                        0,     // 开始时间（ms）
+                        200     // 持续时间（ms，建议≥50ms）
+                ))
+                .build();
+        dispatchGesture(gesture, null, null); // 执行手势
     }
 
     /**
