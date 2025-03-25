@@ -64,7 +64,7 @@ public class MyWebSocketListener extends WebSocketListener {
                     output.writeDouble((Double) data.get("id"));
                     output.writeDouble((Double) data.get("x"));
                     output.writeDouble((Double) data.get("y"));
-                    if (typeInt == 4) {
+                    if (typeInt == 4 || typeInt == 2) {
                         output.writeDouble((Double) data.get("x1"));
                         output.writeDouble((Double) data.get("y1"));
                     }
