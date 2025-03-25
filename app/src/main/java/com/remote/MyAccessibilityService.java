@@ -15,6 +15,9 @@ import android.view.accessibility.AccessibilityEvent;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MyAccessibilityService extends AccessibilityService {
 
@@ -23,6 +26,9 @@ public class MyAccessibilityService extends AccessibilityService {
 
     private int width;
     private int height;
+    private Integer everyActionTime = 80;
+
+    private final Map<Double, Map<String, Object>> description = new ConcurrentHashMap<>();
 
     // 获取屏幕分辨率（单位：像素）
     public int[] getScreenResolution() {
@@ -69,33 +75,113 @@ public class MyAccessibilityService extends AccessibilityService {
     private void handleClient(LocalSocket client) {
         try (DataInputStream input = new DataInputStream(client.getInputStream())) {
             int type = input.readInt();
+            double id = input.readDouble();
             double x = input.readDouble();
             double y = input.readDouble();
             Log.e("ACTION", "x=" + (x * width) + ",y=" + (y * height));
 
-            if (type == 1) {
-                handleClick(x, y);
-            } else if (type == 2) {
-                double x1 = input.readDouble();
-                double y1 = input.readDouble();
-                handleDrag(x, y, x1, y1);
+            if (type == 3) {
+                handleEndDrag(x, y, id);
+                return;
             }
 
+            if (description.containsKey(id) && type == 4) {
+                double x1 = input.readDouble();
+                double y1 = input.readDouble();
+                handleDrag(x, y, x1, y1, id, description.get(id));
+            } else {
+                if (type == 1) {
+                    handleClick(x, y, id);
+                } else if (type == 2) {
+                    double x1 = input.readDouble();
+                    double y1 = input.readDouble();
+                    handleDrag(x, y, x1, y1);
+                } else if (type == 5) {
+                    handleNotContinueClick(x, y);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void handleClick(double x, double y) {
+    private void handleEndDrag(double x, double y, double id) {
         Path path = new Path();
         path.moveTo((float) (x * width), (float) (y * height)); // 目标坐标
 
+        Map<String, Object> map = description.get(id);
+
+        Integer startTime = (Integer) map.get("time");
+
+        GestureDescription.StrokeDescription description1 = (GestureDescription.StrokeDescription) map.get("description");
+
+        GestureDescription.StrokeDescription strokeDescription = description1.continueStroke(
+                path,
+                description1.getDuration(),     // 开始时间（ms）
+                100,     // 持续时间（ms，建议≥50ms）
+                false
+        );
+
+        // ...
         GestureDescription gesture = new GestureDescription.Builder()
-                .addStroke(new GestureDescription.StrokeDescription(
-                        path,
-                        0,     // 开始时间（ms）
-                        50     // 持续时间（ms，建议≥50ms）
-                ))
+                .addStroke(strokeDescription)
+                .build();
+        dispatchGesture(gesture, new GestureResultCallback() {
+            @Override
+            public void onCompleted(GestureDescription gestureDescription) {
+                super.onCompleted(gestureDescription);
+            }
+        }, null); // 执行手势
+        description.remove(id);
+
+    }
+
+    private void handleClick(double x, double y, double id) {
+        Path path = new Path();
+        path.moveTo((float) (x * width), (float) (y * height)); // 目标坐标
+
+        Integer startTime;
+
+        Integer everyActionTime = 50;
+
+        if (description.containsKey(id)) {
+            startTime = (Integer) description.get(id).get("time");
+        } else {
+            startTime = 0;
+        }
+
+        GestureDescription.StrokeDescription strokeDescription = new GestureDescription.StrokeDescription(
+                path,
+                startTime,     // 开始时间（ms）
+                everyActionTime,     // 持续时间（ms，建议≥50ms）
+                true
+        );
+
+        GestureDescription gesture = new GestureDescription.Builder()
+                .addStroke(strokeDescription)
+                .build();
+
+        dispatchGesture(gesture, null, null); // 执行手势
+
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+        stringObjectHashMap.put("description", strokeDescription);
+        stringObjectHashMap.put("time", startTime + everyActionTime);
+
+        description.put(id, stringObjectHashMap);
+    }
+
+    private void handleNotContinueClick(double x, double y) {
+        Path path = new Path();
+        path.moveTo((float) (x * width), (float) (y * height)); // 目标坐标
+
+        GestureDescription.StrokeDescription strokeDescription = new GestureDescription.StrokeDescription(
+                path,
+                0,     // 开始时间（ms）
+                everyActionTime
+        );
+
+        GestureDescription gesture = new GestureDescription.Builder()
+                .addStroke(strokeDescription)
                 .build();
 
         dispatchGesture(gesture, null, null); // 执行手势
@@ -114,7 +200,45 @@ public class MyAccessibilityService extends AccessibilityService {
                         200     // 持续时间（ms，建议≥50ms）
                 ))
                 .build();
-        dispatchGesture(gesture, null, null); // 执行手势
+        dispatchGesture(gesture, new GestureResultCallback() {
+            @Override
+            public void onCompleted(GestureDescription gestureDescription) {
+                super.onCompleted(gestureDescription);
+            }
+        }, null); // 执行手势
+    }
+
+    private void handleDrag(double x, double y, double x1, double y1, double id, Map<String, Object> map) {
+        Path path = new Path();
+        path.moveTo((float) (x * width), (float) (y * height)); // 目标坐标
+        path.lineTo((float) (x1 * width), (float) (y1 * height)); // 目标坐标
+
+        Integer startTime = (Integer) map.get("time");
+
+        GestureDescription.StrokeDescription description1 = (GestureDescription.StrokeDescription) map.get("description");
+
+        GestureDescription.StrokeDescription strokeDescription = description1.continueStroke(
+                path,
+                description1.getDuration(),     // 开始时间（ms）
+                everyActionTime,     // 持续时间（ms，建议≥50ms）
+                true
+        );
+
+        // ...
+        GestureDescription gesture = new GestureDescription.Builder()
+                .addStroke(strokeDescription)
+                .build();
+        dispatchGesture(gesture, new GestureResultCallback() {
+            @Override
+            public void onCompleted(GestureDescription gestureDescription) {
+                super.onCompleted(gestureDescription);
+            }
+        }, null); // 执行手势
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+        stringObjectHashMap.put("description", strokeDescription);
+        stringObjectHashMap.put("time", startTime + everyActionTime);
+
+        description.put(id, stringObjectHashMap);
     }
 
     /**
