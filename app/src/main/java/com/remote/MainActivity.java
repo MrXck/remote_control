@@ -47,28 +47,26 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
                     1);
-        } else {
-
-            try {
-                webRTCManager.initialize(getApplicationContext());
-            } catch (Exception e) {
-                Log.e("ERROR", e.getMessage());
-            }
-
-            mediaProjectionManager = (MediaProjectionManager)
-                    getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-            screenCaptureLauncher = registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    this::handleScreenCaptureResult
-            );
-            startScreenCapture();
-
-            startWebsocket();
-
-            Button button = findViewById(R.id.button);
-
-            button.setOnClickListener((View v) -> webRTCManager.createOffer(webRTCManager.localPeerConnection));
         }
+        try {
+            webRTCManager.initialize(getApplicationContext());
+        } catch (Exception e) {
+            Log.e("ERROR", e.getMessage());
+        }
+
+        mediaProjectionManager = (MediaProjectionManager)
+                getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        screenCaptureLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                this::handleScreenCaptureResult
+        );
+        startScreenCapture();
+
+        startWebsocket();
+
+        Button button = findViewById(R.id.button);
+
+        button.setOnClickListener((View v) -> webRTCManager.createOffer(webRTCManager.localPeerConnection));
     }
 
     private boolean isAccessibilityEnabled() {
@@ -81,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startWebsocket() {
-//        webSocketManager = new WebSocketManager("wss://www.yuumi.cc:8080", id);
-        webSocketManager = new WebSocketManager("ws://192.168.182.161:8080", id);
+        webSocketManager = new WebSocketManager("wss://www.yuumi.cc:8080", id);
+//        webSocketManager = new WebSocketManager("ws://192.168.182.161:8080", id);
         webSocketManager.connect();
     }
 
