@@ -98,11 +98,29 @@ public class MyAccessibilityService extends AccessibilityService {
                     handleDrag(x, y, x1, y1);
                 } else if (type == 5) {
                     handleNotContinueClick(x, y);
+                } else if (type == 6) {
+                    handleBack();
+                } else if (type == 7) {
+                    handleHome();
+                } else if (type == 8) {
+                    handleRecent();
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void handleBack() {
+        performGlobalAction(GLOBAL_ACTION_BACK);
+    }
+
+    private void handleHome() {
+        performGlobalAction(GLOBAL_ACTION_HOME);
+    }
+
+    public void handleRecent() {
+        performGlobalAction(GLOBAL_ACTION_RECENTS);
     }
 
     private void handleEndDrag(double x, double y, double id) {

@@ -54,7 +54,7 @@ public class WebRTCManager {
                         map.put("sdp", sessionDescription.description);
 
                         message.setSdp(map);
-                        MainActivity.webSocketClient.sendMessage(message);
+                        MainActivity.webSocketManager.sendMessage(message);
                     }
 
                     @Override
@@ -87,7 +87,7 @@ public class WebRTCManager {
     }
 
     private void initializeViews() {
-        localView.init(eglBase.getEglBaseContext(), null);
+//        localView.init(eglBase.getEglBaseContext(), null);
 //        localView.setMirror(false); // 屏幕共享无需镜像
 //        localView.setZOrderMediaOverlay(true); // 允许覆盖其他视图
         remoteView.init(eglBase.getEglBaseContext(), null);
@@ -140,7 +140,7 @@ public class WebRTCManager {
 
         // 6. 创建新轨道并替换
         localVideoTrack = peerConnectionFactory.createVideoTrack("screen_video", videoSource);
-        localVideoTrack.addSink(localView);
+//        localVideoTrack.addSink(localView);
         localPeerConnection.addTrack(localVideoTrack);
     }
 
@@ -233,7 +233,7 @@ public class WebRTCManager {
                         map.put("sdpMid", iceCandidate.sdpMid);
                         map.put("sdpMLineIndex", iceCandidate.sdpMLineIndex);
                         message.setCandidate(map);
-                        MainActivity.webSocketClient.sendMessage(message);
+                        MainActivity.webSocketManager.sendMessage(message);
                     }
 
                     @Override
@@ -309,7 +309,7 @@ public class WebRTCManager {
                         map.put("sdpMid", iceCandidate.sdpMid);
                         map.put("sdpMLineIndex", iceCandidate.sdpMLineIndex);
                         message.setCandidate(map);
-                        MainActivity.webSocketClient.sendMessage(message);
+                        MainActivity.webSocketManager.sendMessage(message);
                     }
 
                     @Override
@@ -385,7 +385,7 @@ public class WebRTCManager {
                                     map.put("sdp", sessionDescription.description);
                                     map.put("type", sessionDescription.type);
                                     message.setSdp(map);
-                                    MainActivity.webSocketClient.sendMessage(message);
+                                    MainActivity.webSocketManager.sendMessage(message);
                                 }
 
                                 @Override

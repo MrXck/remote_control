@@ -2,12 +2,14 @@ package com.remote;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.remote.rtc.WebRTCManager;
+import com.remote.utils.DeviceIdUtil;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> screenCaptureLauncher;
 
     public static WebRTCManager webRTCManager = new WebRTCManager();
-    public static WebSocketClient webSocketClient;
+    public static WebSocketManager webSocketManager;
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         webRTCManager.localView = findViewById(R.id.local_view);
         webRTCManager.remoteView = findViewById(R.id.remote_view);
+        id = DeviceIdUtil.getDeviceId(getApplicationContext());
         checkPermissions();
     }
 
@@ -66,9 +71,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isAccessibilityEnabled() {
+        ComponentName expectedComponentName = new ComponentName(this, MyAccessibilityService.class);
+        String enabledServices = Settings.Secure.getString(
+                getContentResolver(),
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        );
+        return enabledServices != null && enabledServices.contains(expectedComponentName.flattenToString());
+    }
+
     private void startWebsocket() {
-        webSocketClient = new WebSocketClient("wss://www.yuumi.cc:8080");
-        webSocketClient.connect(new MyWebSocketListener());
+//        webSocketManager = new WebSocketManager("wss://www.yuumi.cc:8080", id);
+        webSocketManager = new WebSocketManager("ws://192.168.182.161:8080", id);
+        webSocketManager.connect();
     }
 
     private void startScreenCapture() {
@@ -92,6 +107,10 @@ public class MainActivity extends AppCompatActivity {
             // 启动屏幕捕获服务或处理数据
             // 启动前台服务
             startForegroundService(serviceIntent);
+            if (!isAccessibilityEnabled()) {
+                Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                startActivity(intent);
+            }
         } else {
             Log.e("ScreenCapture", "权限被拒绝");
         }
