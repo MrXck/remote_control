@@ -288,81 +288,81 @@ public class MyAccessibilityService extends AccessibilityService {
      */
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        Log.e("zh", "无障碍服务 onAccessibilityEvent:${event}");
-        switch (event.getEventType()) {
-            case AccessibilityEvent.TYPE_ANNOUNCEMENT:
-                Log.e("zh", "应用程序发布公告的事件");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
-                Log.e("zh", "View的焦点");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
-                Log.e("zh", "View的焦点清除");
-                break;
-            case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
-                Log.e("zh", "通知栏状态更新");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_HOVER_ENTER:
-                Log.e("zh", "View的鼠标悬停选中");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_HOVER_EXIT:
-                Log.e("zh", "View的鼠标悬停离开");
-                break;
-            case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START:
-                Log.e("zh", "开始触摸探索手势的事件");
-                break;
-            case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END:
-                Log.e("zh", "结束触摸探索手势的事件");
-                break;
-            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
-                Log.e("zh", "窗口内容更新");
-                break;
-            case AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT:
-                Log.e("zh", "表示助手当前正在读取用户屏幕上下文的事件。");
-                break;
-            case AccessibilityEvent.TYPE_TOUCH_INTERACTION_END:
-                Log.e("zh", "表示用户结束触摸屏幕的事件");
-                break;
-            case AccessibilityEvent.TYPE_TOUCH_INTERACTION_START:
-                Log.e("zh", "表示用户开始触摸屏幕的事件");
-                break;
-            case AccessibilityEvent.TYPE_GESTURE_DETECTION_END:
-                Log.e("zh", "结束手势检测");
-                break;
-            case AccessibilityEvent.TYPE_GESTURE_DETECTION_START:
-                Log.e("zh", "开始手势检测");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED:
-                Log.e("zh", "表示在android.view.View上的上下文单击事件");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_LONG_CLICKED:
-                Log.e("zh", "长按点击事件");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                Log.e("zh", "点击事件");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
-                Log.e("zh", "表示以给定的移动粒度遍历视图文本的事件");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
-                Log.e("zh", "EditText视图内容改变");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
-                Log.e("zh", "EditText视图选中内容改变");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_SELECTED:
-                Log.e("zh", "表示通常在android.widget.AdapterView的上下文中选择项的事件");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_SCROLLED:
-                Log.e("zh", "滚动类View");
-                break;
-            case AccessibilityEvent.TYPE_VIEW_FOCUSED:
-                break;
-            case AccessibilityEvent.TYPE_WINDOWS_CHANGED:
-                break;
-            case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
-                break;
-        }
+//        Log.e("zh", "无障碍服务 onAccessibilityEvent:${event}");
+//        switch (event.getEventType()) {
+//            case AccessibilityEvent.TYPE_ANNOUNCEMENT:
+//                Log.e("zh", "应用程序发布公告的事件");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+//                Log.e("zh", "View的焦点");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
+//                Log.e("zh", "View的焦点清除");
+//                break;
+//            case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
+//                Log.e("zh", "通知栏状态更新");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_HOVER_ENTER:
+//                Log.e("zh", "View的鼠标悬停选中");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_HOVER_EXIT:
+//                Log.e("zh", "View的鼠标悬停离开");
+//                break;
+//            case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START:
+//                Log.e("zh", "开始触摸探索手势的事件");
+//                break;
+//            case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END:
+//                Log.e("zh", "结束触摸探索手势的事件");
+//                break;
+//            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
+//                Log.e("zh", "窗口内容更新");
+//                break;
+//            case AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT:
+//                Log.e("zh", "表示助手当前正在读取用户屏幕上下文的事件。");
+//                break;
+//            case AccessibilityEvent.TYPE_TOUCH_INTERACTION_END:
+//                Log.e("zh", "表示用户结束触摸屏幕的事件");
+//                break;
+//            case AccessibilityEvent.TYPE_TOUCH_INTERACTION_START:
+//                Log.e("zh", "表示用户开始触摸屏幕的事件");
+//                break;
+//            case AccessibilityEvent.TYPE_GESTURE_DETECTION_END:
+//                Log.e("zh", "结束手势检测");
+//                break;
+//            case AccessibilityEvent.TYPE_GESTURE_DETECTION_START:
+//                Log.e("zh", "开始手势检测");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED:
+//                Log.e("zh", "表示在android.view.View上的上下文单击事件");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_LONG_CLICKED:
+//                Log.e("zh", "长按点击事件");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_CLICKED:
+//                Log.e("zh", "点击事件");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
+//                Log.e("zh", "表示以给定的移动粒度遍历视图文本的事件");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
+//                Log.e("zh", "EditText视图内容改变");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
+//                Log.e("zh", "EditText视图选中内容改变");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_SELECTED:
+//                Log.e("zh", "表示通常在android.widget.AdapterView的上下文中选择项的事件");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_SCROLLED:
+//                Log.e("zh", "滚动类View");
+//                break;
+//            case AccessibilityEvent.TYPE_VIEW_FOCUSED:
+//                break;
+//            case AccessibilityEvent.TYPE_WINDOWS_CHANGED:
+//                break;
+//            case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
+//                break;
+//        }
     }
 
     /**
