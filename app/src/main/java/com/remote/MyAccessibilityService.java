@@ -64,7 +64,11 @@ public class MyAccessibilityService extends AccessibilityService {
                 serverSocket = new LocalServerSocket("my_click_socket");
                 while (isRunning) {
                     LocalSocket client = serverSocket.accept();
-                    handleClient(client);
+                    try {
+                        handleClient(client);
+                    } catch (Exception e) {
+                        Log.e("ERROR", e.getMessage());
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
