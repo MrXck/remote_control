@@ -138,7 +138,7 @@ public class WebSocketManager {
             // 转发到二进制处理方法
             onMessage(webSocket, byteString);
             // 收到文本消息
-            log("收到消息: " + text);
+            log("收到消息777777: " + text);
         }
 
         @Override
@@ -164,7 +164,7 @@ public class WebSocketManager {
                     break;
                 case "action":
                     Map data = message.getData();
-                    log("收到操作: " + data);
+//                    log("收到操作: " + data);
                     if ("click".equals(data.get("type"))) {
                         data.put("typeInt", 1);
                         queue.offer(data);
@@ -197,6 +197,8 @@ public class WebSocketManager {
                     if ("admin".equals(password)) {
                         ddd.put("type", "vailSuccess");
                         webSocket.send(JsonUtils.toJson(ddd));
+                        webRTCManager.initLocalPeerConnection();
+                        webRTCManager.createVideoTrack();
                         webRTCManager.createOffer(webRTCManager.localPeerConnection);
                     } else {
                         ddd.put("type", "vailFail");
@@ -213,7 +215,7 @@ public class WebSocketManager {
                     break;
             }
 
-            log("收到消息: " + string);
+//            log("收到消息: " + string);
         }
 
         @Override
