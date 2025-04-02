@@ -27,6 +27,7 @@ public class WebRTCManager {
     public PeerConnection localPeerConnection;
     public MediaProjection mediaProjection;
     private VideoCapturer screenCapturer;
+    private VideoSource videoSource;
 
     // UI Components
     public SurfaceViewRenderer localView;
@@ -127,7 +128,7 @@ public class WebRTCManager {
                 }
         );
 
-        VideoSource videoSource = peerConnectionFactory.createVideoSource(screenCapturer.isScreencast());
+        videoSource = peerConnectionFactory.createVideoSource(screenCapturer.isScreencast());
         SurfaceTextureHelper surfaceHelper = SurfaceTextureHelper.create(
                 "ScreenCaptureThread",
                 eglBase.getEglBaseContext()
@@ -138,7 +139,14 @@ public class WebRTCManager {
         DisplayMetrics metrics = CONTEXT.getResources().getDisplayMetrics();
         screenCapturer.startCapture(metrics.widthPixels, metrics.heightPixels, 30);
 
+        createVideoTrack();
+    }
+
+    public void createVideoTrack() {
         // 6. 创建新轨道并替换
+        try {
+            localVideoTrack.dispose();
+        } catch (Exception ignored) {}
         localVideoTrack = peerConnectionFactory.createVideoTrack("screen_video", videoSource);
 //        localVideoTrack.addSink(localView);
         localPeerConnection.addTrack(localVideoTrack);
@@ -171,7 +179,7 @@ public class WebRTCManager {
 
         // 初始化 PeerConnectionFactory
         PeerConnectionFactory.InitializationOptions initializationOptions =
-                PeerConnectionFactory.InitializationOptions.builder(context)
+                PeerConnectionFactory.InitializationOptions.builder(CONTEXT)
                         .setEnableInternalTracer(true)
                         .createInitializationOptions();
         PeerConnectionFactory.initialize(initializationOptions);
@@ -187,10 +195,15 @@ public class WebRTCManager {
                 .setVideoDecoderFactory(new DefaultVideoDecoderFactory(eglBase.getEglBaseContext()))
                 .createPeerConnectionFactory();
         initializeViews();
-        localPeerConnection = createPeerConnection();
-
+        initLocalPeerConnection();
 //        startLocalVideoCapture();
+    }
 
+    public void initLocalPeerConnection() {
+        try {
+            localPeerConnection.dispose();
+        } catch (Exception ignored) {}
+        localPeerConnection = createPeerConnection();
     }
 
     private PeerConnection createPeerConnection() {
