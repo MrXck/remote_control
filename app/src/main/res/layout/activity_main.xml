@@ -6,17 +6,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
-    <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/local_view"
-            android:layout_width="160dp"
-            android:layout_height="240dp"/>
+    <!--    <org.webrtc.SurfaceViewRenderer-->
+    <!--            android:id="@+id/local_view"-->
+    <!--            android:layout_width="160dp"-->
+    <!--            android:layout_height="240dp"/>-->
 
-    <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/remote_view"
-            android:layout_width="260dp"
-            android:layout_height="240dp"/>
+    <!--    <org.webrtc.SurfaceViewRenderer-->
+    <!--            android:id="@+id/remote_view"-->
+    <!--            android:layout_width="260dp"-->
+    <!--            android:layout_height="240dp"/>-->
 
-    <Button android:layout_width="200px" android:layout_height="200px" android:id="@+id/button"
-            android:text="startCall32432543"/>
+    <!--    <Button android:layout_width="200px" android:layout_height="200px" android:id="@+id/button"-->
+    <!--            android:text="startCall32432543"/>-->
+
+    <TextView
+            android:id="@+id/code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="20dp"
+            android:text="原始文本"/>
+    <TextView
+            android:id="@+id/password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/code"
+            app:layout_constraintStart_toStartOf="@id/code"
+            android:textSize="20dp"
+            android:layout_marginTop="8dp"
+            android:text="密码"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/generate_password"
+                app:layout_constraintTop_toBottomOf="@id/password"
+                app:layout_constraintStart_toStartOf="@id/password"
+                android:layout_marginTop="8dp"
+                android:text="重新生成密码"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
@@ -12,7 +13,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.remote.rtc.WebRTCManager;
 import com.remote.utils.DeviceIdUtil;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,14 +32,46 @@ public class MainActivity extends AppCompatActivity {
     public static WebRTCManager webRTCManager = new WebRTCManager();
     public static WebSocketManager webSocketManager;
     private String id;
+    public static TextView code;
+    public static TextView password;
+
+    public static String generateValidateCode4String(int length) {
+        Random rdm = new Random();
+        String hash1 = Integer.toHexString(rdm.nextInt());
+        return hash1.substring(0, length);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        webRTCManager.localView = findViewById(R.id.local_view);
-        webRTCManager.remoteView = findViewById(R.id.remote_view);
-        id = DeviceIdUtil.getDeviceId(getApplicationContext());
+//        webRTCManager.localView = findViewById(R.id.local_view);
+//        webRTCManager.remoteView = findViewById(R.id.remote_view);
+
+        code = findViewById(R.id.code);
+        password = findViewById(R.id.password);
+
+        View button = findViewById(R.id.generate_password);
+
+        Context context = getApplicationContext();
+
+        SharedPreferences sharedPref = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+        String string = sharedPref.getString("password", generateValidateCode4String(8));
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("password", string);
+        editor.apply();
+
+        password.setText(string);
+
+        button.setOnClickListener(view -> {
+            String passwordCode = generateValidateCode4String(8);
+            password.setText(passwordCode);
+            editor.putString("password", passwordCode);
+            editor.apply();
+        });
+
+
+        id = DeviceIdUtil.getDeviceId(context);
         checkPermissions();
     }
 
@@ -64,9 +99,9 @@ public class MainActivity extends AppCompatActivity {
 
         startWebsocket();
 
-        Button button = findViewById(R.id.button);
-
-        button.setOnClickListener((View v) -> webRTCManager.createOffer(webRTCManager.localPeerConnection));
+//        Button button = findViewById(R.id.button);
+//
+//        button.setOnClickListener((View v) -> webRTCManager.createOffer(webRTCManager.localPeerConnection));
     }
 
     private boolean isAccessibilityEnabled() {

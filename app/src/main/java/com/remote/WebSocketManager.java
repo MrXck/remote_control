@@ -194,7 +194,7 @@ public class WebSocketManager {
                 case "vailPassword":
                     Map ddd = message.getData();
                     String password = (String) ddd.get("password");
-                    if ("admin".equals(password)) {
+                    if (MainActivity.password.getText().equals(password)) {
                         ddd.put("type", "vailSuccess");
                         webSocket.send(JsonUtils.toJson(ddd));
                         webRTCManager.initLocalPeerConnection();
@@ -212,6 +212,7 @@ public class WebSocketManager {
                     map.put("type", "upLine");
                     map.put("code", message.getData().get("code"));
                     webSocket.send(JsonUtils.toJson(map));
+                    MainActivity.code.setText(message.getData().get("code").toString());
                     break;
             }
 
