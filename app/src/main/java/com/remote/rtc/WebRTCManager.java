@@ -91,7 +91,7 @@ public class WebRTCManager {
 //        localView.init(eglBase.getEglBaseContext(), null);
 //        localView.setMirror(false); // 屏幕共享无需镜像
 //        localView.setZOrderMediaOverlay(true); // 允许覆盖其他视图
-        remoteView.init(eglBase.getEglBaseContext(), null);
+//        remoteView.init(eglBase.getEglBaseContext(), null);
     }
 
     private void startLocalVideoCapture() {
