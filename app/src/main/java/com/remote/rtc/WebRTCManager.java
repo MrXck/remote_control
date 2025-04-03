@@ -194,8 +194,8 @@ public class WebRTCManager {
                 ))
                 .setVideoDecoderFactory(new DefaultVideoDecoderFactory(eglBase.getEglBaseContext()))
                 .createPeerConnectionFactory();
-        initializeViews();
         initLocalPeerConnection();
+        initializeViews();
 //        startLocalVideoCapture();
     }
 
