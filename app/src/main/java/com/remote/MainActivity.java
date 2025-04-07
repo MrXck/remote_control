@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private String id;
     public static TextView code;
     public static TextView password;
+    private PowerManager.WakeLock wakeLock;
 
     public static String generateValidateCode4String(int length) {
         Random rdm = new Random();
@@ -47,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 //        webRTCManager.localView = findViewById(R.id.local_view);
 //        webRTCManager.remoteView = findViewById(R.id.remote_view);
+
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        wakeLock = pm.newWakeLock(
+                PowerManager.PARTIAL_WAKE_LOCK,
+                "MyApp::WakeLockTag"
+        );
+        wakeLock.acquire(10 * 60 * 1000L);
 
         code = findViewById(R.id.code);
         password = findViewById(R.id.password);
@@ -147,5 +156,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e("ScreenCapture", "权限被拒绝");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        wakeLock.release();
     }
 }

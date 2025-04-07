@@ -26,7 +26,7 @@ public class MyAccessibilityService extends AccessibilityService {
 
     private int width;
     private int height;
-    private Integer everyActionTime = 80;
+    private final Integer everyActionTime = 150;
 
     private final Map<Double, Map<String, Object>> description = new ConcurrentHashMap<>();
 
@@ -101,7 +101,7 @@ public class MyAccessibilityService extends AccessibilityService {
                     double y1 = input.readDouble();
                     handleDrag(x, y, x1, y1);
                 } else if (type == 5) {
-                    handleNotContinueClick(x, y);
+                    handleNotContinueClick(x, y, id);
                 } else if (type == 6) {
                     handleBack();
                 } else if (type == 7) {
@@ -140,7 +140,7 @@ public class MyAccessibilityService extends AccessibilityService {
         GestureDescription.StrokeDescription strokeDescription = description1.continueStroke(
                 path,
                 description1.getDuration(),     // 开始时间（ms）
-                100,     // 持续时间（ms，建议≥50ms）
+                everyActionTime,     // 持续时间（ms，建议≥50ms）
                 false
         );
 
@@ -162,15 +162,9 @@ public class MyAccessibilityService extends AccessibilityService {
         Path path = new Path();
         path.moveTo((float) (x * width), (float) (y * height)); // 目标坐标
 
-        Integer startTime;
+        Integer startTime = 0;
 
         Integer everyActionTime = 50;
-
-        if (description.containsKey(id)) {
-            startTime = (Integer) description.get(id).get("time");
-        } else {
-            startTime = 0;
-        }
 
         GestureDescription.StrokeDescription strokeDescription = new GestureDescription.StrokeDescription(
                 path,
@@ -192,14 +186,17 @@ public class MyAccessibilityService extends AccessibilityService {
         description.put(id, stringObjectHashMap);
     }
 
-    private void handleNotContinueClick(double x, double y) {
+    private void handleNotContinueClick(double x, double y, double id) {
         Path path = new Path();
         path.moveTo((float) (x * width), (float) (y * height)); // 目标坐标
 
-        GestureDescription.StrokeDescription strokeDescription = new GestureDescription.StrokeDescription(
+        GestureDescription.StrokeDescription description1 = (GestureDescription.StrokeDescription) (description.get(id)).get("description");
+
+        GestureDescription.StrokeDescription strokeDescription = description1.continueStroke(
                 path,
-                0,     // 开始时间（ms）
-                everyActionTime
+                description1.getDuration(),     // 开始时间（ms）
+                everyActionTime,     // 持续时间（ms，建议≥50ms）
+                false
         );
 
         GestureDescription gesture = new GestureDescription.Builder()
@@ -207,6 +204,7 @@ public class MyAccessibilityService extends AccessibilityService {
                 .build();
 
         dispatchGesture(gesture, null, null); // 执行手势
+        description.remove(id);
     }
 
     // 拖动

@@ -212,7 +212,9 @@ public class WebSocketManager {
                     map.put("type", "upLine");
                     map.put("code", message.getData().get("code"));
                     webSocket.send(JsonUtils.toJson(map));
-                    MainActivity.code.setText(message.getData().get("code").toString());
+                    runOnUiThread(() -> {
+                        MainActivity.code.setText(message.getData().get("code").toString());
+                    });
                     break;
             }
 
