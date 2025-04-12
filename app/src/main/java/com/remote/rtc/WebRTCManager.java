@@ -210,8 +210,8 @@ public class WebRTCManager {
         PeerConnection peerConnection;
         List<PeerConnection.IceServer> iceServers = new ArrayList<>();
         iceServers.add(PeerConnection.IceServer.builder("stun:8.217.77.26:3478").createIceServer());
-//        iceServers.add(PeerConnection.IceServer.builder("turn:8.217.77.26:3478?transport=udp")
-//                .setUsername("demo").setPassword("123456").createIceServer());
+        iceServers.add(PeerConnection.IceServer.builder("turn:8.217.77.26:3478")
+                .setUsername("demo").setPassword("123456").createIceServer());
         PeerConnection.RTCConfiguration config = new PeerConnection.RTCConfiguration(iceServers);
         peerConnection = peerConnectionFactory.createPeerConnection(
                 config,
